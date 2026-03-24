@@ -1,0 +1,196 @@
+import type { ApiResponse, PageResponse } from '../../types/common';
+import type { PaginatedProduct, Product } from '../../types/product';
+
+// Steam capsule images — 616×353 landscape, loads with no auth
+const steam = (appId: number) =>
+  `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/capsule_616x353.jpg`;
+
+export const MOCK_PRODUCTS: Partial<Product>[] = [
+  {
+    id: '1',
+    productName: 'Elden Ring',
+    description:
+      'Tarnished, may the grace of gold guide thee. An open world action-RPG set in the Lands Between, crafted by Hidetaka Miyazaki and George R.R. Martin.',
+    rating: 4.9,
+    stockQuantity: 42,
+    price: 2499,
+    productType: 'PHYSICAL',
+    platform: 'PC / PS5 / Xbox',
+    genre: 'Action RPG',
+    esrbRating: 'M',
+    publisher: 'Bandai Namco',
+    developer: 'FromSoftware',
+    status: 'ACTIVE',
+    productImages: [{ id: 'img1', imageUrl: steam(1245620), isPrimary: true, displayOrder: 1, altText: 'Elden Ring', imageType: 'cover', dimensions: null, fileSize: null, mimeType: null, width: 616, height: 353, aspectRatio: 1.746, createdAt: '', updatedAt: '' }],
+    createdAt: '2024-01-01T00:00:00',
+    updatedAt: '2024-01-01T00:00:00',
+  },
+  {
+    id: '2',
+    productName: 'God of War (2018)',
+    description:
+      'His vengeance against the Gods of Olympus years behind him, Kratos now lives as a man in the realm of Norse Gods and monsters.',
+    rating: 4.8,
+    stockQuantity: 28,
+    price: 1999,
+    productType: 'DIGITAL',
+    platform: 'PC / PS4 / PS5',
+    genre: 'Action Adventure',
+    esrbRating: 'M',
+    publisher: 'Sony Interactive Entertainment',
+    developer: 'Santa Monica Studio',
+    status: 'ACTIVE',
+    productImages: [{ id: 'img2', imageUrl: steam(1593500), isPrimary: true, displayOrder: 1, altText: 'God of War', imageType: 'cover', dimensions: null, fileSize: null, mimeType: null, width: 616, height: 353, aspectRatio: 1.746, createdAt: '', updatedAt: '' }],
+    createdAt: '2024-01-02T00:00:00',
+    updatedAt: '2024-01-02T00:00:00',
+  },
+  {
+    id: '3',
+    productName: 'Hollow Knight',
+    description:
+      'Forge your own path in Hollow Knight! An epic action-adventure through a vast ruined kingdom of insects and heroes.',
+    rating: 4.7,
+    stockQuantity: 999,
+    price: 349,
+    productType: 'DIGITAL',
+    platform: 'PC / Switch / PS4 / Xbox',
+    genre: 'Metroidvania',
+    esrbRating: 'E10+',
+    publisher: 'Team Cherry',
+    developer: 'Team Cherry',
+    status: 'ACTIVE',
+    productImages: [{ id: 'img3', imageUrl: steam(367520), isPrimary: true, displayOrder: 1, altText: 'Hollow Knight', imageType: 'cover', dimensions: null, fileSize: null, mimeType: null, width: 616, height: 353, aspectRatio: 1.746, createdAt: '', updatedAt: '' }],
+    createdAt: '2024-01-03T00:00:00',
+    updatedAt: '2024-01-03T00:00:00',
+  },
+  {
+    id: '4',
+    productName: 'Cyberpunk 2077',
+    description:
+      'An open-world action RPG set in Night City — a megalopolis obsessed with power, glamour, and body modification.',
+    rating: 4.3,
+    stockQuantity: 60,
+    price: 1799,
+    productType: 'DIGITAL',
+    platform: 'PC / PS5 / Xbox Series X',
+    genre: 'RPG',
+    esrbRating: 'M',
+    publisher: 'CD Projekt',
+    developer: 'CD Projekt Red',
+    status: 'ACTIVE',
+    productImages: [{ id: 'img4', imageUrl: steam(1091500), isPrimary: true, displayOrder: 1, altText: 'Cyberpunk 2077', imageType: 'cover', dimensions: null, fileSize: null, mimeType: null, width: 616, height: 353, aspectRatio: 1.746, createdAt: '', updatedAt: '' }],
+    createdAt: '2024-01-04T00:00:00',
+    updatedAt: '2024-01-04T00:00:00',
+  },
+  {
+    id: '5',
+    productName: 'Halo Infinite',
+    description:
+      "When all hope is lost and humanity's fate hangs in the balance, the Master Chief is ready to confront the most ruthless foe he's ever faced.",
+    rating: 4.1,
+    stockQuantity: 35,
+    price: 2299,
+    productType: 'PHYSICAL',
+    platform: 'PC / Xbox Series X',
+    genre: 'First Person Shooter',
+    esrbRating: 'T',
+    publisher: 'Xbox Game Studios',
+    developer: '343 Industries',
+    status: 'ACTIVE',
+    productImages: [{ id: 'img5', imageUrl: steam(1240440), isPrimary: true, displayOrder: 1, altText: 'Halo Infinite', imageType: 'cover', dimensions: null, fileSize: null, mimeType: null, width: 616, height: 353, aspectRatio: 1.746, createdAt: '', updatedAt: '' }],
+    createdAt: '2024-01-05T00:00:00',
+    updatedAt: '2024-01-05T00:00:00',
+  },
+  {
+    id: '6',
+    productName: 'Red Dead Redemption 2',
+    description:
+      'America, 1899. Arthur Morgan and the Van der Linde gang are outlaws on the run. With federal agents and bounty hunters closing in, the gang must rob, steal and fight their way across the rugged heartland.',
+    rating: 4.9,
+    stockQuantity: 50,
+    price: 2999,
+    productType: 'PHYSICAL',
+    platform: 'PC / PS4 / Xbox One',
+    genre: 'Open World Adventure',
+    esrbRating: 'M',
+    publisher: 'Rockstar Games',
+    developer: 'Rockstar Studios',
+    status: 'ACTIVE',
+    productImages: [{ id: 'img6', imageUrl: steam(1174180), isPrimary: true, displayOrder: 1, altText: 'Red Dead Redemption 2', imageType: 'cover', dimensions: null, fileSize: null, mimeType: null, width: 616, height: 353, aspectRatio: 1.746, createdAt: '', updatedAt: '' }],
+    createdAt: '2024-01-06T00:00:00',
+    updatedAt: '2024-01-06T00:00:00',
+  },
+  {
+    id: '7',
+    productName: 'Baldur\'s Gate 3',
+    description:
+      'Gather your party and return to the Forgotten Realms in a tale of fellowship and betrayal, sacrifice and survival, and the lure of absolute power.',
+    rating: 4.9,
+    stockQuantity: 75,
+    price: 3499,
+    productType: 'DIGITAL',
+    platform: 'PC / PS5',
+    genre: 'RPG',
+    esrbRating: 'M',
+    publisher: 'Larian Studios',
+    developer: 'Larian Studios',
+    status: 'ACTIVE',
+    productImages: [{ id: 'img7', imageUrl: steam(1086940), isPrimary: true, displayOrder: 1, altText: "Baldur's Gate 3", imageType: 'cover', dimensions: null, fileSize: null, mimeType: null, width: 616, height: 353, aspectRatio: 1.746, createdAt: '', updatedAt: '' }],
+    createdAt: '2024-01-07T00:00:00',
+    updatedAt: '2024-01-07T00:00:00',
+  },
+  {
+    id: '8',
+    productName: 'The Witcher 3: Wild Hunt',
+    description:
+      'You are Geralt of Rivia, a professional monster hunter. In this open world RPG, you must track down a ruthless child of prophecy.',
+    rating: 4.8,
+    stockQuantity: 100,
+    price: 999,
+    productType: 'DIGITAL',
+    platform: 'PC / PS5 / Xbox / Switch',
+    genre: 'RPG',
+    esrbRating: 'M',
+    publisher: 'CD Projekt',
+    developer: 'CD Projekt Red',
+    status: 'ACTIVE',
+    productImages: [{ id: 'img8', imageUrl: steam(292030), isPrimary: true, displayOrder: 1, altText: 'The Witcher 3', imageType: 'cover', dimensions: null, fileSize: null, mimeType: null, width: 616, height: 353, aspectRatio: 1.746, createdAt: '', updatedAt: '' }],
+    createdAt: '2024-01-08T00:00:00',
+    updatedAt: '2024-01-08T00:00:00',
+  },
+];
+
+export function MOCK_PAGINATED_PRODUCTS(
+  page: number,
+  size: number,
+): ApiResponse<PageResponse<PaginatedProduct>> {
+  const paginated: PaginatedProduct[] = MOCK_PRODUCTS.map((p) => ({
+    id: p.id!,
+    product: p.productName!,
+    description: p.description ?? null,
+    rating: p.rating ?? 0,
+    price: p.price ?? 0,
+    sku: null,
+    brandname: p.publisher ?? null,
+    imageUrl: p.productImages?.[0]?.imageUrl,
+    createdAt: p.createdAt!,
+    updatedAt: p.updatedAt!,
+  }));
+
+  const start = page * size;
+  const sliced = paginated.slice(start, start + size);
+
+  return {
+    status: 200,
+    message: 'Products retrieved successfully',
+    data: {
+      content: sliced,
+      page,
+      size,
+      totalElements: paginated.length,
+      totalPages: Math.ceil(paginated.length / size),
+      last: start + size >= paginated.length,
+    },
+    metadata: null,
+  };
+}
