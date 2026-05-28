@@ -15,7 +15,7 @@ const SORT_OPTIONS = [
   { value: 'createdAt', label: 'Newest' },
 ];
 
-const FALLBACK_IMG = 'https://placehold.co/616x353/1c1f26/0070D1?text=Game';
+const FALLBACK_IMG = 'https://placehold.co/616x353/f5f1ea/1c1a17?text=Game';
 
 export default function SearchResults() {
   const [searchParams] = useSearchParams();
@@ -58,12 +58,26 @@ export default function SearchResults() {
       </Box>
 
       {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <Typography variant="h5" fontWeight={700}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: 2,
+          mb: 4,
+          pb: 2,
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <Typography variant="h4" sx={{ fontSize: { xs: 24, md: 30 } }}>
           {query ? `Results for "${query}"` : 'Search Games'}
         </Typography>
-        {data && <Chip label={`${data.data.totalElements} results`} size="small" color="primary" variant="outlined" />}
-        {isLoading && <CircularProgress size={20} />}
+        {data && (
+          <Typography variant="caption" color="text.secondary" sx={{ letterSpacing: '0.06em' }}>
+            {data.data.totalElements} RESULTS
+          </Typography>
+        )}
+        {isLoading && <CircularProgress size={16} sx={{ color: 'text.secondary' }} />}
       </Box>
 
       {isError && <Alert severity="error" sx={{ mb: 3 }}>Search failed. Make sure the backend is running.</Alert>}
@@ -77,33 +91,83 @@ export default function SearchResults() {
           <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
             <Box
               onClick={() => navigate(`/products/${product.id}`)}
-              sx={{
+              sx={(theme) => ({
                 bgcolor: 'background.paper',
-                border: '1px solid rgba(255,255,255,0.07)',
-                borderRadius: 2,
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 1,
                 overflow: 'hidden',
                 cursor: 'pointer',
-                transition: 'border-color 0.2s, box-shadow 0.2s',
-                '&:hover': { borderColor: 'rgba(0,112,209,0.5)', boxShadow: '0 4px 24px rgba(0,112,209,0.15)' },
-              }}
+                transition: 'border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease',
+                '&:hover': {
+                  borderColor: 'text.secondary',
+                  transform: 'translateY(-2px)',
+                  boxShadow:
+                    theme.palette.mode === 'dark'
+                      ? '0 12px 32px -16px rgba(0,0,0,0.7)'
+                      : '0 12px 32px -16px rgba(28,26,23,0.18)',
+                },
+              })}
             >
               <Box
                 component="img"
                 src={FALLBACK_IMG}
                 alt={product.productName}
-                sx={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }}
+                sx={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }}
               />
-              <Box sx={{ p: 2 }}>
-                <Typography fontWeight={700} noWrap gutterBottom>{product.productName}</Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-                  <Typography color="primary" fontWeight={700}>{formatPrice(product.price)}</Typography>
-                  <Chip
-                    label={product.status}
-                    size="small"
-                    color={product.status === 'ACTIVE' ? 'success' : product.status === 'OUT_OF_STOCK' ? 'error' : 'default'}
-                  />
+              <Box sx={{ p: 2.5 }}>
+                <Typography
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: 15,
+                    letterSpacing: '-0.015em',
+                    mb: 1,
+                  }}
+                  noWrap
+                >
+                  {product.productName}
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mt: 1.5,
+                    pt: 1.5,
+                    borderTop: '1px solid',
+                    borderColor: 'divider',
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: 16,
+                      letterSpacing: '-0.02em',
+                    }}
+                  >
+                    {formatPrice(product.price)}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                      fontSize: 10,
+                      fontWeight: 600,
+                      color:
+                        product.status === 'ACTIVE'
+                          ? 'success.main'
+                          : product.status === 'OUT_OF_STOCK'
+                          ? 'error.main'
+                          : 'text.secondary',
+                    }}
+                  >
+                    {product.status === 'ACTIVE' ? 'In stock' : product.status === 'OUT_OF_STOCK' ? 'Sold out' : product.status}
+                  </Typography>
                 </Box>
-                <Typography variant="caption" color="text.secondary">{product.stockQuantity} in stock</Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                  {product.stockQuantity} units
+                </Typography>
               </Box>
             </Box>
           </Grid>
@@ -111,8 +175,8 @@ export default function SearchResults() {
       </Grid>
 
       {totalPages > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}>
-          <Pagination count={totalPages} page={page + 1} onChange={(_, v) => setPage(v - 1)} color="primary" shape="rounded" />
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
+          <Pagination count={totalPages} page={page + 1} onChange={(_, v) => setPage(v - 1)} shape="rounded" />
         </Box>
       )}
     </Container>

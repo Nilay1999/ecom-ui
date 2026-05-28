@@ -1,11 +1,8 @@
 /**
- * Register page — form fields mirror CreateUserRequestDto exactly:
- *   email (@NotBlank, @Email, max 255)
- *   firstName (@NotBlank, max 100)
- *   lastName (optional, max 100)
- *   username (@NotBlank, max 100)
- *   age (optional int)
- *   gender (optional: MALE | FEMALE | OTHER)
+ * Register page — fields mirror RegisterRequestDto (auth-service):
+ *   email, password (min 8), firstName, lastName, phoneNumber (optional).
+ * On success the user is logged in (tokens issued by /auth/register).
+ * Profile extras (username/age/gender) are edited later on the Profile page.
  */
 import { useState } from 'react';
 import {
@@ -14,64 +11,48 @@ import {
   Typography,
   TextField,
   Button,
-  MenuItem,
   Paper,
   Alert,
   CircularProgress,
   Divider,
+  Link as MuiLink,
 } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { useNavigate } from 'react-router-dom';
-import { useCreateUser } from '../hooks/useUsers';
-import type { CreateUserRequest, Gender } from '../types/user';
-
-const GENDERS: { value: Gender; label: string }[] = [
-  { value: 'MALE', label: 'Male' },
-  { value: 'FEMALE', label: 'Female' },
-  { value: 'OTHER', label: 'Other' },
-];
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { extractApiError } from '../utils/apiError';
+import type { RegisterRequest } from '../types/auth';
 
 export default function Register() {
   const navigate = useNavigate();
-  const createUser = useCreateUser();
+  const { register } = useAuth();
 
-  const [form, setForm] = useState<CreateUserRequest>({
+  const [form, setForm] = useState<RegisterRequest>({
     email: '',
+    password: '',
     firstName: '',
     lastName: '',
-    username: '',
-    age: undefined,
-    gender: undefined,
+    phoneNumber: '',
   });
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleChange(field: keyof CreateUserRequest, value: string | number | undefined) {
+  function handleChange(field: keyof RegisterRequest, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setSubmitting(true);
     try {
-      await createUser.mutateAsync(form);
-      setSuccess(true);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Registration failed. Please try again.');
+      await register({ ...form, phoneNumber: form.phoneNumber || undefined });
+      navigate('/', { replace: true });
+    } catch (err) {
+      setError(extractApiError(err, 'Registration failed. Please try again.'));
+    } finally {
+      setSubmitting(false);
     }
-  }
-
-  if (success) {
-    return (
-      <Container maxWidth="sm" sx={{ py: 8, textAlign: 'center' }}>
-        <Alert severity="success" sx={{ mb: 3 }}>
-          Account created successfully! Welcome to PixelCart 🎮
-        </Alert>
-        <Button variant="contained" onClick={() => navigate('/')}>
-          Start Shopping
-        </Button>
-      </Container>
-    );
   }
 
   return (
@@ -104,6 +85,18 @@ export default function Register() {
             sx={{ mb: 2 }}
           />
 
+          <TextField
+            label="Password"
+            type="password"
+            required
+            fullWidth
+            value={form.password}
+            onChange={(e) => handleChange('password', e.target.value)}
+            helperText="At least 8 characters"
+            inputProps={{ minLength: 8 }}
+            sx={{ mb: 2 }}
+          />
+
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
             <TextField
               label="First Name"
@@ -115,61 +108,40 @@ export default function Register() {
             />
             <TextField
               label="Last Name"
+              required
               fullWidth
-              value={form.lastName ?? ''}
+              value={form.lastName}
               onChange={(e) => handleChange('lastName', e.target.value)}
               inputProps={{ maxLength: 100 }}
             />
           </Box>
 
           <TextField
-            label="Username"
-            required
+            label="Phone Number"
             fullWidth
-            value={form.username}
-            onChange={(e) => handleChange('username', e.target.value)}
-            inputProps={{ maxLength: 100 }}
-            sx={{ mb: 2 }}
+            value={form.phoneNumber ?? ''}
+            onChange={(e) => handleChange('phoneNumber', e.target.value)}
+            sx={{ mb: 3 }}
           />
-
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 3 }}>
-            <TextField
-              label="Age"
-              type="number"
-              fullWidth
-              value={form.age ?? ''}
-              onChange={(e) =>
-                handleChange('age', e.target.value ? parseInt(e.target.value) : undefined)
-              }
-              inputProps={{ min: 1, max: 120 }}
-            />
-            <TextField
-              select
-              label="Gender"
-              fullWidth
-              value={form.gender ?? ''}
-              onChange={(e) => handleChange('gender', e.target.value as Gender | undefined)}
-            >
-              <MenuItem value="">Prefer not to say</MenuItem>
-              {GENDERS.map((g) => (
-                <MenuItem key={g.value} value={g.value}>
-                  {g.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
 
           <Button
             type="submit"
             variant="contained"
             fullWidth
             size="large"
-            disabled={createUser.isPending}
-            startIcon={createUser.isPending ? <CircularProgress size={16} /> : <PersonAddIcon />}
+            disabled={submitting}
+            startIcon={submitting ? <CircularProgress size={16} /> : <PersonAddIcon />}
           >
-            {createUser.isPending ? 'Creating Account…' : 'Create Account'}
+            {submitting ? 'Creating Account…' : 'Create Account'}
           </Button>
         </Box>
+
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 3, textAlign: 'center' }}>
+          Already have an account?{' '}
+          <MuiLink component={RouterLink} to="/login">
+            Sign in
+          </MuiLink>
+        </Typography>
       </Paper>
     </Container>
   );

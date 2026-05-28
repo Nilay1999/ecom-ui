@@ -16,6 +16,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import HomeIcon from '@mui/icons-material/Home';
 import StarIcon from '@mui/icons-material/Star';
 import { useUser, useUpdateProfile, useUserAddresses, useAddAddress, useDeleteAddress, useSetDefaultAddress } from '../hooks/useUsers';
+import { useAuth } from '../context/AuthContext';
 import type { Gender, AddressRequest } from '../types/user';
 
 const GENDERS: { value: Gender; label: string }[] = [
@@ -24,17 +25,14 @@ const GENDERS: { value: Gender; label: string }[] = [
   { value: 'OTHER', label: 'Other' },
 ];
 
-// TODO: replace with useAuth().userId
-const DEMO_USER_ID = undefined as string | undefined;
-
 const EMPTY_ADDRESS: AddressRequest = {
   addressLine1: '', addressLine2: '', city: '', state: '', country: 'India', pincode: '', isDefault: false,
 };
 
 export default function Profile() {
-  const userId = DEMO_USER_ID;
-  const { data: userData, isLoading: userLoading } = useUser(userId);
-  const { data: addrData, isLoading: addrLoading } = useUserAddresses(userId);
+  const { userId } = useAuth();
+  const { data: userData, isLoading: userLoading } = useUser(userId ?? undefined);
+  const { data: addrData, isLoading: addrLoading } = useUserAddresses(userId ?? undefined);
   const updateProfile = useUpdateProfile();
   const addAddress = useAddAddress(userId ?? '');
   const deleteAddress = useDeleteAddress(userId ?? '');
@@ -158,7 +156,7 @@ export default function Profile() {
             ) : (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {addresses.map((addr) => (
-                  <Box key={addr.addressId} sx={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 2, p: 2 }}>
+                  <Box key={addr.addressId} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 0.5 }}>
                         <HomeIcon sx={{ fontSize: 16, color: 'primary.main' }} />

@@ -21,7 +21,7 @@ import { useProduct } from '../hooks/useProduct';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/formatPrice';
 
-const FALLBACK_IMG = 'https://placehold.co/616x353/1c1f26/0070D1?text=Game';
+const FALLBACK_IMG = 'https://placehold.co/616x353/f5f1ea/1c1a17?text=Game';
 
 export default function ProductDetails() {
   const { id } = useParams<{ id: string }>();
@@ -72,16 +72,13 @@ export default function ProductDetails() {
   const primaryImage =
     product.productImages?.find((img) => img.isPrimary)?.imageUrl ?? FALLBACK_IMG;
 
-  const statusColor =
-    product.status === 'ACTIVE' ? 'success' : product.status === 'OUT_OF_STOCK' ? 'error' : 'default';
-
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
-      <Button startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)} sx={{ mb: 3 }}>
+      <Button startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)} sx={{ mb: 3 }} variant="text">
         Back
       </Button>
 
-      <Grid container spacing={5}>
+      <Grid container spacing={6}>
         {/* Cover */}
         <Grid item xs={12} md={5}>
           <Box
@@ -93,8 +90,9 @@ export default function ProductDetails() {
             }}
             sx={{
               width: '100%',
-              borderRadius: 3,
-              border: '1px solid rgba(0,112,209,0.15)',
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: 'divider',
               objectFit: 'cover',
               aspectRatio: '16/9',
             }}
@@ -103,45 +101,69 @@ export default function ProductDetails() {
 
         {/* Details */}
         <Grid item xs={12} md={7}>
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2.5 }}>
             {product.platform && (
-              <Chip label={product.platform} size="small" variant="outlined" color="primary" />
+              <Chip label={product.platform} size="small" variant="outlined" />
             )}
             {product.genre && <Chip label={product.genre} size="small" variant="outlined" />}
             {product.productType && (
-              <Chip
-                label={product.productType}
-                size="small"
-                color={product.productType === 'DIGITAL' ? 'info' : 'default'}
-              />
+              <Chip label={product.productType} size="small" variant="outlined" />
             )}
-            <Chip label={product.status} size="small" color={statusColor as 'success' | 'error' | 'default'} />
+            <Chip
+              label={product.status === 'ACTIVE' ? 'In stock' : product.status === 'OUT_OF_STOCK' ? 'Sold out' : product.status}
+              size="small"
+              variant="outlined"
+              sx={{
+                color:
+                  product.status === 'ACTIVE'
+                    ? 'success.main'
+                    : product.status === 'OUT_OF_STOCK'
+                    ? 'error.main'
+                    : 'text.secondary',
+                borderColor: 'currentColor',
+              }}
+            />
           </Box>
 
-          <Typography variant="h4" fontWeight={800} gutterBottom>
+          <Typography
+            variant="h2"
+            sx={{ fontSize: { xs: 32, md: 44 }, lineHeight: 1.1, mb: 2 }}
+          >
             {product.productName}
           </Typography>
 
           {product.developer && (
-            <Typography variant="body2" color="text.secondary" mb={0.5}>
-              Developer: <strong>{product.developer}</strong>
-              {product.publisher && ` · Publisher: ${product.publisher}`}
+            <Typography variant="body2" color="text.secondary" mb={1.5}>
+              {product.developer}
+              {product.publisher && ` · ${product.publisher}`}
             </Typography>
           )}
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, my: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
             <Rating value={product.rating ?? 0} precision={0.1} size="small" readOnly />
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="caption" color="text.secondary">
               {product.rating?.toFixed(1)}
             </Typography>
           </Box>
 
-          <Typography variant="h3" color="primary" fontWeight={800} sx={{ my: 2 }}>
+          <Typography
+            sx={{
+              fontWeight: 700,
+              fontSize: { xs: 28, md: 34 },
+              letterSpacing: '-0.03em',
+              my: 3,
+            }}
+          >
             {formatPrice(product.price)}
           </Typography>
 
           {product.description && (
-            <Typography variant="body1" color="text.secondary" mb={3} sx={{ lineHeight: 1.8 }}>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              mb={4}
+              sx={{ lineHeight: 1.8, maxWidth: 580 }}
+            >
               {product.description}
             </Typography>
           )}
@@ -152,12 +174,12 @@ export default function ProductDetails() {
             startIcon={<AddShoppingCartIcon />}
             onClick={handleAddToCart}
             disabled={product.status === 'OUT_OF_STOCK'}
-            sx={{ px: 4, py: 1.5, fontSize: 16 }}
+            sx={{ px: 4, py: 1.4, fontSize: 14 }}
           >
             {product.status === 'OUT_OF_STOCK' ? 'Out of Stock' : 'Add to Cart'}
           </Button>
 
-          <Divider sx={{ my: 3 }} />
+          <Divider sx={{ my: 4 }} />
 
           <Table size="small">
             <TableBody>

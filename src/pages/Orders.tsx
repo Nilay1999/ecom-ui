@@ -1,6 +1,6 @@
 /**
  * Orders page — shows paginated orders for the logged-in user.
- * Until auth is wired, accepts a userId query param or shows placeholder.
+ * Rendered behind ProtectedRoute, so userId is always present.
  */
 import {
   Container,
@@ -14,7 +14,6 @@ import {
   AccordionDetails,
   Skeleton,
   Alert,
-  Button,
   Divider,
   Table,
   TableBody,
@@ -26,6 +25,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useNavigate } from 'react-router-dom';
 import { useOrdersByUser } from '../hooks/useOrders';
+import { useAuth } from '../context/AuthContext';
 import { formatPrice } from '../utils/formatPrice';
 import type { OrderStatus } from '../types/order';
 
@@ -38,29 +38,11 @@ const STATUS_COLOR: Record<OrderStatus, 'default' | 'info' | 'warning' | 'succes
   CANCELLED: 'error',
 };
 
-// TODO: replace with useAuth().userId
-const DEMO_USER_ID = undefined;
-
 export default function Orders() {
   const navigate = useNavigate();
-  const { data, isLoading, isError } = useOrdersByUser(DEMO_USER_ID);
+  const { userId } = useAuth();
+  const { data, isLoading, isError } = useOrdersByUser(userId ?? undefined);
   const orders = data?.data?.content ?? [];
-
-  if (!DEMO_USER_ID) {
-    return (
-      <Container maxWidth="md" sx={{ py: 8, textAlign: 'center' }}>
-        <Typography variant="h5" color="text.secondary" gutterBottom>
-          Sign in to view your orders
-        </Typography>
-        <Typography variant="body2" color="text.disabled" mb={3}>
-          Order history will appear here once authentication is set up.
-        </Typography>
-        <Button variant="contained" href="/register">
-          Create Account
-        </Button>
-      </Container>
-    );
-  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 5 }}>

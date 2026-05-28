@@ -1,12 +1,20 @@
+import { useTheme } from '@mui/material/styles';
+
 interface Props {
   size?: number;
   showText?: boolean;
 }
 
 export default function PixelCartLogo({ size = 36, showText = true }: Props) {
+  const theme = useTheme();
+  const body = theme.palette.text.primary;
+  const cutout = theme.palette.background.paper;
+  const muted = theme.palette.mode === 'dark' ? 'rgba(21,19,15,0.55)' : 'rgba(251,248,244,0.55)';
+  const accent = theme.palette.secondary.main;
+
   const iconW = 48;
-  const textW = 102;
-  const gap = 10;
+  const textW = 148;
+  const gap = 12;
   const totalW = showText ? iconW + gap + textW : iconW;
 
   return (
@@ -17,53 +25,51 @@ export default function PixelCartLogo({ size = 36, showText = true }: Props) {
       height={size}
       aria-label="PixelCart"
     >
-      <defs>
-        <linearGradient id="pcBody" x1="0" y1="0" x2="0.3" y2="1">
-          <stop offset="0%" stopColor="#3d9fe8" />
-          <stop offset="100%" stopColor="#004f9a" />
-        </linearGradient>
-        <linearGradient id="pcText" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#3d9fe8" />
-          <stop offset="100%" stopColor="#0070D1" />
-        </linearGradient>
-      </defs>
+      {/* Controller body — ink, editorial */}
+      <g fill={body}>
+        {/* Left shoulder bumper */}
+        <rect x="6" y="9" width="14" height="7" rx="3.5" />
+        {/* Right shoulder bumper */}
+        <rect x="28" y="9" width="14" height="7" rx="3.5" />
+        {/* Main controller body */}
+        <rect x="3" y="14" width="42" height="27" rx="9" />
+      </g>
 
-      {/* Left shoulder bumper */}
-      <rect x="6"  y="9" width="14" height="7" rx="3.5" fill="url(#pcBody)" />
-      {/* Right shoulder bumper */}
-      <rect x="28" y="9" width="14" height="7" rx="3.5" fill="url(#pcBody)" />
+      {/* D-pad — cream cutouts */}
+      <g fill={cutout}>
+        <rect x="12" y="23.5" width="3.5" height="11" rx="1.2" />
+        <rect x="8.5" y="27" width="11" height="3.5" rx="1.2" />
 
-      {/* Main controller body */}
-      <rect x="3" y="14" width="42" height="27" rx="9" fill="url(#pcBody)" />
+        {/* Face buttons — diamond */}
+        <rect x="31" y="21.5" width="4.5" height="4.5" rx="1.2" />
+        <rect x="36.5" y="26" width="4.5" height="4.5" rx="1.2" />
+        <rect x="31" y="30.5" width="4.5" height="4.5" rx="1.2" />
+        <rect x="25.5" y="26" width="4.5" height="4.5" rx="1.2" />
 
-      {/* D-pad vertical */}
-      <rect x="12"  y="23.5" width="3.5" height="11" rx="1.2" fill="rgba(255,255,255,0.88)" />
-      {/* D-pad horizontal */}
-      <rect x="8.5" y="27"   width="11"  height="3.5" rx="1.2" fill="rgba(255,255,255,0.88)" />
+        {/* Centre home button */}
+        <circle cx="24" cy="22" r="2.6" />
+      </g>
 
-      {/* Face buttons — pixel squares, diamond layout */}
-      <rect x="31"   y="21.5" width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.88)" />
-      <rect x="36.5" y="26"   width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.88)" />
-      <rect x="31"   y="30.5" width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.88)" />
-      <rect x="25.5" y="26"   width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.88)" />
+      {/* Small select/menu pills — muted */}
+      <g fill={muted}>
+        <rect x="18.5" y="19.5" width="3.5" height="2" rx="1" />
+        <rect x="26" y="19.5" width="3.5" height="2" rx="1" />
+      </g>
 
-      {/* Centre home button */}
-      <circle cx="24" cy="22" r="2.8" fill="rgba(255,255,255,0.95)" />
+      {/* Single accent dot — burgundy */}
+      <circle cx="38.75" cy="28.25" r="1.1" fill={accent} />
 
-      {/* Small select/menu pills */}
-      <rect x="18.5" y="19.5" width="3.5" height="2" rx="1" fill="rgba(255,255,255,0.45)" />
-      <rect x="26"   y="19.5" width="3.5" height="2" rx="1" fill="rgba(255,255,255,0.45)" />
-
-      {/* Wordmark */}
+      {/* Wordmark — serif editorial */}
       {showText && (
         <text
           x={iconW + gap}
-          y="32"
-          fontFamily="Inter, Roboto, sans-serif"
-          fontWeight="800"
-          fontSize="20"
-          letterSpacing="-0.5"
-          fill="url(#pcText)"
+          y="27"
+          dominantBaseline="middle"
+          fontFamily='"Inter", "Helvetica Neue", sans-serif'
+          fontWeight="700"
+          fontSize="30"
+          letterSpacing="-0.9"
+          fill={body}
         >
           PixelCart
         </text>

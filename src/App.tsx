@@ -1,9 +1,9 @@
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { ThemeProvider, CssBaseline, Box } from '@mui/material';
-import theme from './theme';
+import { Box } from '@mui/material';
 import { queryClient } from './config/queryClient';
+import { ColorModeProvider } from './context/ColorModeContext';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
@@ -13,8 +13,7 @@ import AppRoutes from './routes/AppRoutes';
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
+      <ColorModeProvider>
         <AuthProvider>
           <CartProvider>
             <BrowserRouter>
@@ -35,7 +34,7 @@ export default function App() {
             </BrowserRouter>
           </CartProvider>
         </AuthProvider>
-      </ThemeProvider>
+      </ColorModeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

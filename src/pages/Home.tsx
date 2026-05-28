@@ -27,57 +27,77 @@ export default function Home() {
 
   return (
     <Box sx={{ minHeight: '100vh' }}>
-      {/* Hero */}
-      <Box
-        sx={{
-          background: 'linear-gradient(135deg, #0070D1 0%, #004f9a 100%)',
-          py: { xs: 6, md: 10 },
-          textAlign: 'center',
-        }}
-      >
-        <Typography
-          variant="h2"
-          sx={{ fontWeight: 900, color: '#fff', mb: 1.5, fontSize: { xs: '2rem', md: '3.2rem' } }}
-        >
-          Your Gaming Universe
-        </Typography>
-        <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.75)', mb: 4 }}>
-          Discover thousands of games across every platform
-        </Typography>
-
-        <Box sx={{ maxWidth: 480, mx: 'auto', px: 2 }}>
-          <TextField
-            fullWidth
-            placeholder="Search games, platforms, genres…"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: 'text.secondary' }} />
-                </InputAdornment>
-              ),
-            }}
+      {/* Hero — editorial */}
+      <Container maxWidth="xl" sx={{ pt: { xs: 6, md: 10 }, pb: { xs: 5, md: 8 } }}>
+        <Box sx={{ maxWidth: 760 }}>
+          <Typography
+            variant="caption"
             sx={{
-              bgcolor: 'background.paper',
-              borderRadius: 2,
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 2,
-                '& fieldset': { border: 'none' },
-              },
+              textTransform: 'uppercase',
+              letterSpacing: '0.18em',
+              fontWeight: 600,
+              color: 'secondary.main',
+              fontSize: 11,
+              display: 'block',
+              mb: 2,
             }}
-          />
-        </Box>
-      </Box>
+          >
+            Vol. {new Date().getFullYear()} — Curated for players
+          </Typography>
+          <Typography
+            variant="h1"
+            sx={{
+              fontSize: { xs: '2.4rem', md: '4.2rem' },
+              lineHeight: 1.05,
+              mb: 3,
+            }}
+          >
+            A quieter way to discover&nbsp;great games.
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ fontSize: { xs: 15, md: 17 }, maxWidth: 560, mb: 4 }}
+          >
+            Browse a thoughtfully edited catalog across PC, console and handheld — each title chosen for craft, not noise.
+          </Typography>
 
-      <Container maxWidth="xl" sx={{ py: 5 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h5" fontWeight={700}>
+          <Box sx={{ maxWidth: 480 }}>
+            <TextField
+              fullWidth
+              placeholder="Search games, platforms, genres…"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary', fontSize: 18 }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
+        </Box>
+      </Container>
+
+      <Container maxWidth="xl" sx={{ pb: 8 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            mb: 4,
+            pb: 2,
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Typography variant="h4" sx={{ fontSize: { xs: 24, md: 30 } }}>
             {searchInput ? `Results for "${searchInput}"` : 'Featured Games'}
           </Typography>
           {data && (
-            <Typography variant="body2" color="text.secondary">
-              {data.data.totalElements} games
+            <Typography variant="caption" color="text.secondary" sx={{ letterSpacing: '0.06em' }}>
+              {data.data.totalElements} TITLES
             </Typography>
           )}
         </Box>
@@ -105,12 +125,11 @@ export default function Home() {
         )}
 
         {totalPages > 1 && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
             <Pagination
               count={totalPages}
               page={page + 1}
               onChange={(_, value) => setPage(value - 1)}
-              color="primary"
               shape="rounded"
             />
           </Box>

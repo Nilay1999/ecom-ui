@@ -73,7 +73,7 @@ export default function OrderDetail() {
         {/* Order items */}
         <Grid item xs={12} md={8}>
           <Paper sx={{ p: 0, overflow: 'hidden' }}>
-            <Box sx={{ px: 3, py: 2, borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+            <Box sx={{ px: 3, py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
               <Typography fontWeight={700}>Items ({order.items.length})</Typography>
             </Box>
             <Table>

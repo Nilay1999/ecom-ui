@@ -1,55 +1,55 @@
 /**
- * Checkout page — form fields mirror CreateOrderRequestDto exactly.
- * Uses usePlaceOrder() mutation; userId/addressId are stubbed until auth is wired.
+ * Checkout page — places an order for the logged-in user.
+ * Shipping/billing addresses are chosen from the user's saved addresses
+ * (managed on the Profile page). Rendered behind ProtectedRoute.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Container,
   Typography,
-  Grid,
-  TextField,
   Button,
   Paper,
   Divider,
   Alert,
   MenuItem,
+  TextField,
   CircularProgress,
   Stack,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { usePlaceOrder } from '../hooks/useOrders';
+import { useUserAddresses } from '../hooks/useUsers';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { formatPrice } from '../utils/formatPrice';
+import { extractApiError } from '../utils/apiError';
 import type { CreateOrderRequest } from '../types/order';
 
 const PAYMENT_METHODS = ['Credit Card', 'Debit Card', 'UPI', 'Net Banking', 'Cash on Delivery'];
 
 export default function Checkout() {
   const navigate = useNavigate();
+  const { userId } = useAuth();
   const { items, totalAmount, clearCart } = useCart();
+  const { data: addrData, isLoading: addrLoading } = useUserAddresses(userId ?? undefined);
   const placeOrder = usePlaceOrder();
 
-  // Form state — mirrors CreateOrderRequestDto
-  const [form, setForm] = useState({
-    userId: '',          // UUID — populated from AuthContext in real flow
-    shippingAddressId: '',  // UUID of selected address
-    billingAddressId: '',
-    paymentMethod: 'UPI',
-    // Address fields (UI convenience — in real flow, user picks from saved addresses)
-    addressLine1: '',
-    addressLine2: '',
-    city: '',
-    state: '',
-    country: 'India',
-    pincode: '',
-  });
+  const addresses = addrData?.data ?? [];
+
+  const [shippingAddressId, setShippingAddressId] = useState('');
+  const [billingAddressId, setBillingAddressId] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('UPI');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  function handleChange(field: string, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  }
+  // Default the selectors to the user's default (or first) address once loaded.
+  useEffect(() => {
+    if (addresses.length === 0) return;
+    const preferred = addresses.find((a) => a.isDefault) ?? addresses[0];
+    setShippingAddressId((prev) => prev || preferred.addressId);
+    setBillingAddressId((prev) => prev || preferred.addressId);
+  }, [addresses]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -59,13 +59,16 @@ export default function Checkout() {
       setError('Your cart is empty.');
       return;
     }
+    if (!userId || !shippingAddressId || !billingAddressId) {
+      setError('Please select a shipping and billing address.');
+      return;
+    }
 
-    // TODO: replace stub UUIDs with real IDs from auth / address selection
     const request: CreateOrderRequest = {
-      userId: form.userId || '00000000-0000-0000-0000-000000000001',
-      shippingAddressId: form.shippingAddressId || '00000000-0000-0000-0000-000000000002',
-      billingAddressId: form.billingAddressId || '00000000-0000-0000-0000-000000000002',
-      paymentMethod: form.paymentMethod,
+      userId,
+      shippingAddressId,
+      billingAddressId,
+      paymentMethod,
       items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
     };
 
@@ -73,8 +76,8 @@ export default function Checkout() {
       await placeOrder.mutateAsync(request);
       clearCart();
       setSuccess(true);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to place order.');
+    } catch (err) {
+      setError(extractApiError(err, 'Failed to place order.'));
     }
   }
 
@@ -82,7 +85,7 @@ export default function Checkout() {
     return (
       <Container maxWidth="sm" sx={{ py: 8, textAlign: 'center' }}>
         <Alert severity="success" sx={{ mb: 3 }}>
-          Order placed successfully! 🎮
+          Order placed successfully!
         </Alert>
         <Button variant="contained" onClick={() => navigate('/orders')}>
           View Orders
@@ -102,67 +105,55 @@ export default function Checkout() {
         onSubmit={handleSubmit}
         sx={{ display: 'grid', gridTemplateColumns: { md: '2fr 1fr' }, gap: 4 }}
       >
-        {/* Shipping form */}
         <Stack spacing={3}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" fontWeight={600} gutterBottom>
-              Shipping Address
+              Shipping & Billing
             </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
+
+            {addrLoading ? (
+              <CircularProgress size={20} />
+            ) : addresses.length === 0 ? (
+              <Box>
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  You have no saved addresses. Add one before checking out.
+                </Alert>
+                <Button variant="outlined" onClick={() => navigate('/profile')}>
+                  Manage Addresses
+                </Button>
+              </Box>
+            ) : (
+              <Stack spacing={2}>
                 <TextField
-                  label="Address Line 1"
-                  required
+                  select
+                  label="Shipping Address"
                   fullWidth
-                  value={form.addressLine1}
-                  onChange={(e) => handleChange('addressLine1', e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12}>
+                  value={shippingAddressId}
+                  onChange={(e) => setShippingAddressId(e.target.value)}
+                >
+                  {addresses.map((a) => (
+                    <MenuItem key={a.addressId} value={a.addressId}>
+                      {a.addressLine1}, {a.city}, {a.state} — {a.pincode}
+                      {a.isDefault ? ' (Default)' : ''}
+                    </MenuItem>
+                  ))}
+                </TextField>
                 <TextField
-                  label="Address Line 2"
+                  select
+                  label="Billing Address"
                   fullWidth
-                  value={form.addressLine2}
-                  onChange={(e) => handleChange('addressLine2', e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="City"
-                  required
-                  fullWidth
-                  value={form.city}
-                  onChange={(e) => handleChange('city', e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="State"
-                  required
-                  fullWidth
-                  value={form.state}
-                  onChange={(e) => handleChange('state', e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Country"
-                  required
-                  fullWidth
-                  value={form.country}
-                  onChange={(e) => handleChange('country', e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Pincode"
-                  required
-                  fullWidth
-                  value={form.pincode}
-                  onChange={(e) => handleChange('pincode', e.target.value)}
-                />
-              </Grid>
-            </Grid>
+                  value={billingAddressId}
+                  onChange={(e) => setBillingAddressId(e.target.value)}
+                >
+                  {addresses.map((a) => (
+                    <MenuItem key={a.addressId} value={a.addressId}>
+                      {a.addressLine1}, {a.city}, {a.state} — {a.pincode}
+                      {a.isDefault ? ' (Default)' : ''}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Stack>
+            )}
           </Paper>
 
           <Paper sx={{ p: 3 }}>
@@ -173,8 +164,8 @@ export default function Checkout() {
               select
               label="Payment Method"
               fullWidth
-              value={form.paymentMethod}
-              onChange={(e) => handleChange('paymentMethod', e.target.value)}
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
             >
               {PAYMENT_METHODS.map((m) => (
                 <MenuItem key={m} value={m}>
@@ -222,7 +213,7 @@ export default function Checkout() {
             variant="contained"
             fullWidth
             size="large"
-            disabled={placeOrder.isPending}
+            disabled={placeOrder.isPending || addresses.length === 0}
             startIcon={placeOrder.isPending ? <CircularProgress size={16} /> : undefined}
           >
             {placeOrder.isPending ? 'Placing Order…' : 'Place Order'}

@@ -15,9 +15,19 @@ export default function Brands() {
   const navigate = useNavigate();
 
   return (
-    <Container maxWidth="xl" sx={{ py: 5 }}>
-      <Typography variant="h4" fontWeight={700} mb={1}>Brands</Typography>
-      <Typography color="text.secondary" mb={4}>Browse games by publisher & developer</Typography>
+    <Container maxWidth="xl" sx={{ py: 6 }}>
+      <Box sx={{ mb: 5, pb: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
+        <Typography
+          variant="caption"
+          sx={{ textTransform: 'uppercase', letterSpacing: '0.18em', fontWeight: 600, color: 'secondary.main', fontSize: 11 }}
+        >
+          Publishers & Studios
+        </Typography>
+        <Typography variant="h3" sx={{ mt: 1.5, mb: 1, fontSize: { xs: 30, md: 40 } }}>Brands</Typography>
+        <Typography color="text.secondary" sx={{ maxWidth: 560 }}>
+          Browse games by the publishers and studios that made them — from indie labels to global houses.
+        </Typography>
+      </Box>
 
       {isError && <Alert severity="error" sx={{ mb: 3 }}>Failed to load brands.</Alert>}
 
@@ -25,7 +35,7 @@ export default function Brands() {
         {isLoading
           ? Array.from({ length: 12 }).map((_, i) => (
               <Grid item key={i} xs={12} sm={6} md={4} lg={3}>
-                <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 2 }} />
+                <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 1 }} />
               </Grid>
             ))
           : brands.map((brand) => (
@@ -34,22 +44,40 @@ export default function Brands() {
                   onClick={() => navigate(`/brands/${brand.id}`)}
                   sx={{
                     bgcolor: 'background.paper',
-                    border: '1px solid rgba(255,255,255,0.07)',
-                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 1,
                     p: 3,
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 2,
-                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                    '&:hover': { borderColor: 'rgba(0,112,209,0.5)', boxShadow: '0 4px 20px rgba(0,112,209,0.12)' },
+                    transition: 'border-color 200ms ease, transform 200ms ease',
+                    '&:hover': { borderColor: 'text.secondary', transform: 'translateY(-2px)' },
                   }}
                 >
-                  <Avatar src={brand.logoUrl ?? undefined} sx={{ bgcolor: 'primary.dark', width: 48, height: 48 }}>
+                  <Avatar
+                    src={brand.logoUrl ?? undefined}
+                    sx={{
+                      bgcolor: 'action.selected',
+                      color: 'text.primary',
+                      width: 48,
+                      height: 48,
+                    }}
+                  >
                     <StoreIcon />
                   </Avatar>
                   <Box sx={{ minWidth: 0 }}>
-                    <Typography fontWeight={700} noWrap>{brand.name}</Typography>
+                    <Typography
+                      sx={{
+                        fontWeight: 600,
+                        fontSize: 15,
+                        letterSpacing: '-0.015em',
+                      }}
+                      noWrap
+                    >
+                      {brand.name}
+                    </Typography>
                     {brand.description && (
                       <Typography variant="caption" color="text.secondary" sx={{
                         display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden',
@@ -64,8 +92,8 @@ export default function Brands() {
       </Grid>
 
       {totalPages > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}>
-          <Pagination count={totalPages} page={page + 1} onChange={(_, v) => setPage(v - 1)} color="primary" shape="rounded" />
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
+          <Pagination count={totalPages} page={page + 1} onChange={(_, v) => setPage(v - 1)} shape="rounded" />
         </Box>
       )}
     </Container>
