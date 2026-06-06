@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import {
-  Container, Typography, Box, Grid, Chip, Skeleton, Alert,
-  Accordion, AccordionSummary, AccordionDetails, Pagination,
+  Container, Box, Grid, Chip, Skeleton, Alert,
+  Accordion, AccordionSummary, AccordionDetails, Pagination, Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CategoryIcon from '@mui/icons-material/Category';
 import { useNavigate } from 'react-router-dom';
 import { useCategoryTree } from '../hooks/useCategories';
+import PageHeader from '../components/PageHeader';
+import EmptyState from '../components/EmptyState';
 
 export default function Categories() {
   const [page, setPage] = useState(0);
@@ -15,20 +17,17 @@ export default function Categories() {
   const totalPages = data?.data?.totalPages ?? 1;
   const navigate = useNavigate();
 
+  // Categories aren't a list endpoint param, so browsing a category runs a
+  // real search by its name — landing the user on actual results.
+  const browse = (name: string) => navigate(`/search?q=${encodeURIComponent(name)}`);
+
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
-      <Box sx={{ mb: 5, pb: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
-        <Typography
-          variant="caption"
-          sx={{ textTransform: 'uppercase', letterSpacing: '0.18em', fontWeight: 600, color: 'secondary.main', fontSize: 11 }}
-        >
-          Index
-        </Typography>
-        <Typography variant="h3" sx={{ mt: 1.5, mb: 1, fontSize: { xs: 30, md: 40 } }}>Categories</Typography>
-        <Typography color="text.secondary" sx={{ maxWidth: 560 }}>
-          Browse all game genres and platforms.
-        </Typography>
-      </Box>
+      <PageHeader
+        eyebrow="Index"
+        title="Categories"
+        subtitle="Browse all game genres and platforms."
+      />
 
       {isError && <Alert severity="error" sx={{ mb: 3 }}>Failed to load categories.</Alert>}
 
@@ -40,6 +39,14 @@ export default function Categories() {
             </Grid>
           ))}
         </Grid>
+      ) : categories.length === 0 && !isError ? (
+        <EmptyState
+          icon={<CategoryIcon />}
+          title="No categories yet"
+          description="There are no categories to browse right now. Explore the full catalog instead."
+          actionLabel="Browse Games"
+          onAction={() => navigate('/')}
+        />
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           {categories.map((cat) => (
@@ -60,11 +67,7 @@ export default function Categories() {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                     <CategoryIcon sx={{ color: 'text.secondary', fontSize: 18 }} />
                     <Typography
-                      sx={{
-                        fontWeight: 600,
-                        fontSize: 15,
-                        letterSpacing: '-0.015em',
-                      }}
+                      sx={{ fontWeight: 600, fontSize: 15, letterSpacing: '-0.015em' }}
                     >
                       {cat.name}
                     </Typography>
@@ -78,7 +81,7 @@ export default function Categories() {
                         key={sub.id}
                         label={sub.name}
                         clickable
-                        onClick={() => navigate(`/?category=${sub.slug}`)}
+                        onClick={() => browse(sub.name)}
                         variant="outlined"
                         size="small"
                       />
@@ -89,7 +92,10 @@ export default function Categories() {
             ) : (
               <Box
                 key={cat.id}
-                onClick={() => navigate(`/?category=${cat.slug}`)}
+                onClick={() => browse(cat.name)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter') browse(cat.name); }}
                 sx={{
                   bgcolor: 'background.paper',
                   border: '1px solid',
@@ -106,11 +112,7 @@ export default function Categories() {
               >
                 <CategoryIcon sx={{ color: 'text.secondary', fontSize: 18 }} />
                 <Typography
-                  sx={{
-                    fontWeight: 600,
-                    fontSize: 15,
-                    letterSpacing: '-0.015em',
-                  }}
+                  sx={{ fontWeight: 600, fontSize: 15, letterSpacing: '-0.015em' }}
                 >
                   {cat.name}
                 </Typography>

@@ -65,10 +65,10 @@ export default function PixelCartLogo({ size = 36, showText = true }: Props) {
           x={iconW + gap}
           y="27"
           dominantBaseline="middle"
-          fontFamily='"Inter", "Helvetica Neue", sans-serif'
-          fontWeight="700"
-          fontSize="30"
-          letterSpacing="-0.9"
+          fontFamily='"Plus Jakarta Sans", "Inter", sans-serif'
+          fontWeight="800"
+          fontSize="29"
+          letterSpacing="-1"
           fill={body}
         >
           PixelCart

@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box, Container, Typography, Grid, TextField, InputAdornment,
   FormControlLabel, Switch, MenuItem, Select, FormControl, InputLabel,
-  Pagination, Alert, Chip, CircularProgress,
+  Pagination, Alert, CircularProgress, useTheme,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useSearchProducts } from '../hooks/useProducts';
 import { formatPrice } from '../utils/formatPrice';
+import { fallbackImageFor } from '../utils/placeholderImage';
+import EmptyState from '../components/EmptyState';
 
 const SORT_OPTIONS = [
   { value: 'price', label: 'Price' },
@@ -15,17 +18,25 @@ const SORT_OPTIONS = [
   { value: 'createdAt', label: 'Newest' },
 ];
 
-const FALLBACK_IMG = 'https://placehold.co/616x353/f5f1ea/1c1a17?text=Game';
-
 export default function SearchResults() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const FALLBACK_IMG = fallbackImageFor(theme.palette.mode);
 
-  const [query, setQuery] = useState(searchParams.get('q') ?? '');
+  const urlQuery = searchParams.get('q') ?? '';
+  const [query, setQuery] = useState(urlQuery);
   const [inStock, setInStock] = useState(false);
   const [sort, setSort] = useState('createdAt');
   const [page, setPage] = useState(0);
   const limit = 12;
+
+  // Keep the in-page query in sync when the URL ?q= changes (e.g. searching
+  // again from the navbar while already on this page).
+  useEffect(() => {
+    setQuery(urlQuery);
+    setPage(0);
+  }, [urlQuery]);
 
   const { data, isLoading, isError } = useSearchProducts(query, inStock, page, limit, sort);
   const results = data?.data?.content ?? [];
@@ -41,6 +52,7 @@ export default function SearchResults() {
           placeholder="Search games…"
           size="small"
           sx={{ flex: 1, minWidth: 240 }}
+          inputProps={{ 'aria-label': 'Search games' }}
           InputProps={{
             startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>,
           }}
@@ -86,6 +98,14 @@ export default function SearchResults() {
         <Typography color="text.secondary">Type something above to search.</Typography>
       )}
 
+      {query && !isLoading && !isError && results.length === 0 && (
+        <EmptyState
+          icon={<SearchOffIcon />}
+          title={`No results for "${query}"`}
+          description="Try a different title, platform, or genre — or check your spelling."
+        />
+      )}
+
       <Grid container spacing={3}>
         {results.map((product) => (
           <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
@@ -111,8 +131,11 @@ export default function SearchResults() {
             >
               <Box
                 component="img"
-                src={FALLBACK_IMG}
+                src={product.primaryImage?.imageUrl ?? FALLBACK_IMG}
                 alt={product.productName}
+                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                  e.currentTarget.src = FALLBACK_IMG;
+                }}
                 sx={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }}
               />
               <Box sx={{ p: 2.5 }}>

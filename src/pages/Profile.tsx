@@ -15,6 +15,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import HomeIcon from '@mui/icons-material/Home';
 import StarIcon from '@mui/icons-material/Star';
+import { useNavigate } from 'react-router-dom';
 import { useUser, useUpdateProfile, useUserAddresses, useAddAddress, useDeleteAddress, useSetDefaultAddress } from '../hooks/useUsers';
 import { useAuth } from '../context/AuthContext';
 import type { Gender, AddressRequest } from '../types/user';
@@ -30,6 +31,7 @@ const EMPTY_ADDRESS: AddressRequest = {
 };
 
 export default function Profile() {
+  const navigate = useNavigate();
   const { userId } = useAuth();
   const { data: userData, isLoading: userLoading } = useUser(userId ?? undefined);
   const { data: addrData, isLoading: addrLoading } = useUserAddresses(userId ?? undefined);
@@ -82,7 +84,7 @@ export default function Profile() {
     return (
       <Container maxWidth="md" sx={{ py: 8, textAlign: 'center' }}>
         <Typography variant="h5" color="text.secondary" gutterBottom>Sign in to view your profile</Typography>
-        <Button variant="contained" href="/register">Create Account</Button>
+        <Button variant="contained" onClick={() => navigate('/register')}>Create Account</Button>
       </Container>
     );
   }
@@ -98,7 +100,7 @@ export default function Profile() {
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="h6" fontWeight={700}>Account Info</Typography>
               {!editingProfile && (
-                <IconButton size="small" onClick={openProfileEdit}><EditIcon fontSize="small" /></IconButton>
+                <IconButton size="small" onClick={openProfileEdit} aria-label="Edit profile"><EditIcon fontSize="small" /></IconButton>
               )}
             </Box>
             <Divider sx={{ mb: 3 }} />
@@ -166,7 +168,7 @@ export default function Profile() {
                         {!addr.isDefault && (
                           <Button size="small" onClick={() => setDefault.mutate(addr.addressId)}>Set Default</Button>
                         )}
-                        <IconButton size="small" color="error" onClick={() => deleteAddress.mutate(addr.addressId)}>
+                        <IconButton size="small" color="error" onClick={() => deleteAddress.mutate(addr.addressId)} aria-label="Delete address">
                           <DeleteIcon fontSize="small" />
                         </IconButton>
                       </Box>

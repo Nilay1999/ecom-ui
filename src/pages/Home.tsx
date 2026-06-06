@@ -5,21 +5,20 @@ import {
   Typography,
   Grid,
   Pagination,
-  TextField,
-  InputAdornment,
   Alert,
   Button,
 } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
 import ProductCard from '../components/ProductCard';
 import ProductGridSkeleton from '../components/LoadingSkeleton';
+import EmptyState from '../components/EmptyState';
+import SearchBar from '../components/SearchBar';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import { useProducts } from '../hooks/useProducts';
 
 const PAGE_SIZE = 12;
 
 export default function Home() {
   const [page, setPage] = useState(0);
-  const [searchInput, setSearchInput] = useState('');
 
   const { data, isLoading, isError, refetch } = useProducts(page, PAGE_SIZE);
   const products = data?.data?.content ?? [];
@@ -62,21 +61,7 @@ export default function Home() {
             Browse a thoughtfully edited catalog across PC, console and handheld — each title chosen for craft, not noise.
           </Typography>
 
-          <Box sx={{ maxWidth: 480 }}>
-            <TextField
-              fullWidth
-              placeholder="Search games, platforms, genres…"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: 'text.secondary', fontSize: 18 }} />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Box>
+          <SearchBar variant="field" placeholder="Search games, platforms, genres…" />
         </Box>
       </Container>
 
@@ -93,7 +78,7 @@ export default function Home() {
           }}
         >
           <Typography variant="h4" sx={{ fontSize: { xs: 24, md: 30 } }}>
-            {searchInput ? `Results for "${searchInput}"` : 'Featured Games'}
+            Featured Games
           </Typography>
           {data && (
             <Typography variant="caption" color="text.secondary" sx={{ letterSpacing: '0.06em' }}>
@@ -110,17 +95,19 @@ export default function Home() {
 
         {isLoading ? (
           <ProductGridSkeleton count={PAGE_SIZE} />
+        ) : products.length === 0 && !isError ? (
+          <EmptyState
+            icon={<SportsEsportsIcon />}
+            title="No games available yet"
+            description="The catalog is empty right now. Check back soon for new titles."
+          />
         ) : (
           <Grid container spacing={3}>
-            {products
-              .filter((p) =>
-                searchInput ? p.product.toLowerCase().includes(searchInput.toLowerCase()) : true,
-              )
-              .map((product) => (
-                <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
-                  <ProductCard product={product} />
-                </Grid>
-              ))}
+            {products.map((product) => (
+              <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
+                <ProductCard product={product} />
+              </Grid>
+            ))}
           </Grid>
         )}
 

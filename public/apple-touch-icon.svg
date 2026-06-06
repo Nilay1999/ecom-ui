@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#171326"/>
+      <stop offset="100%" stop-color="#0a0a10"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0%" stop-color="#9d80ff"/>
+      <stop offset="100%" stop-color="#5326d6"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#7c5cff" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#7c5cff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="180" height="180" rx="40" fill="url(#bg)"/>
+  <circle cx="90" cy="98" r="78" fill="url(#glow)"/>
+
+  <!-- Controller scaled & centred (source 48x48 → scale 2.4, offset x18 y30) -->
+  <g transform="translate(18,30) scale(2.4)">
+    <rect x="6" y="9" width="14" height="7" rx="3.5" fill="url(#body)"/>
+    <rect x="28" y="9" width="14" height="7" rx="3.5" fill="url(#body)"/>
+    <rect x="3" y="14" width="42" height="27" rx="9" fill="url(#body)"/>
+
+    <rect x="12" y="23.5" width="3.5" height="11" rx="1.2" fill="rgba(255,255,255,0.92)"/>
+    <rect x="8.5" y="27" width="11" height="3.5" rx="1.2" fill="rgba(255,255,255,0.92)"/>
+
+    <rect x="31"   y="21.5" width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.92)"/>
+    <rect x="36.5" y="26"   width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.92)"/>
+    <rect x="31"   y="30.5" width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.92)"/>
+    <rect x="25.5" y="26"   width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.92)"/>
+
+    <circle cx="24" cy="22" r="2.8" fill="rgba(255,255,255,0.96)"/>
+    <rect x="18.5" y="19.5" width="3.5" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+    <rect x="26"   y="19.5" width="3.5" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+  </g>
+</svg>

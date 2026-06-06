@@ -6,60 +6,73 @@ type Tokens = {
   inkDisabled: string;
   cream: string;
   paper: string;
+  paperRaised: string;
   line: string;
   lineSoft: string;
   accent: string;
+  accentDeep: string;
+  accentSoft: string;
   hover: string;
   selected: string;
   appBar: string;
-  buttonHover: string;
+  glow: string;
 };
 
+// Light mode — clean, cool neutral with a rich electric-violet accent
 const LIGHT: Tokens = {
-  ink: '#1c1a17',
-  inkSoft: '#5b554d',
-  inkDisabled: 'rgba(28,26,23,0.4)',
-  cream: '#f5f1ea',
-  paper: '#fbf8f4',
-  line: 'rgba(28,26,23,0.10)',
-  lineSoft: 'rgba(28,26,23,0.06)',
-  accent: '#8a2e2a',
-  hover: 'rgba(28,26,23,0.04)',
-  selected: 'rgba(28,26,23,0.06)',
-  appBar: 'rgba(245,241,234,0.82)',
-  buttonHover: '#000',
+  ink: '#16131f',
+  inkSoft: '#605a72',
+  inkDisabled: 'rgba(22,19,31,0.38)',
+  cream: '#f5f4fb',
+  paper: '#ffffff',
+  paperRaised: '#ffffff',
+  line: 'rgba(22,19,31,0.10)',
+  lineSoft: 'rgba(22,19,31,0.06)',
+  accent: '#6a3df0',
+  accentDeep: '#5326d6',
+  accentSoft: 'rgba(106,61,240,0.10)',
+  hover: 'rgba(22,19,31,0.04)',
+  selected: 'rgba(106,61,240,0.08)',
+  appBar: 'rgba(245,244,251,0.78)',
+  glow: 'rgba(106,61,240,0.30)',
 };
 
+// Dark mode — deep cool near-black with a bright neon-violet accent (the headline experience)
 const DARK: Tokens = {
-  ink: '#ece7de',
-  inkSoft: '#a39c90',
-  inkDisabled: 'rgba(236,231,222,0.38)',
-  cream: '#15130f',
-  paper: '#1e1b16',
-  line: 'rgba(236,231,222,0.14)',
-  lineSoft: 'rgba(236,231,222,0.08)',
-  accent: '#d4736d',
-  hover: 'rgba(236,231,222,0.06)',
-  selected: 'rgba(236,231,222,0.10)',
-  appBar: 'rgba(21,19,15,0.82)',
-  buttonHover: '#fff',
+  ink: '#ece9f5',
+  inkSoft: '#9b96ab',
+  inkDisabled: 'rgba(236,233,245,0.36)',
+  cream: '#0a0a10',
+  paper: '#14141e',
+  paperRaised: '#1b1b27',
+  line: 'rgba(255,255,255,0.12)',
+  lineSoft: 'rgba(255,255,255,0.07)',
+  accent: '#9d80ff',
+  accentDeep: '#7c5cff',
+  accentSoft: 'rgba(157,128,255,0.14)',
+  hover: 'rgba(255,255,255,0.05)',
+  selected: 'rgba(157,128,255,0.16)',
+  appBar: 'rgba(10,10,16,0.7)',
+  glow: 'rgba(124,92,255,0.45)',
 };
 
 export function getTheme(mode: PaletteMode): Theme {
   const t = mode === 'dark' ? DARK : LIGHT;
+  const ctaText = '#ffffff';
 
   return createTheme({
     palette: {
       mode,
       primary: {
-        main: t.ink,
-        light: mode === 'dark' ? '#fffaf2' : '#3a3631',
-        dark: mode === 'dark' ? '#c9c3b8' : '#0f0e0c',
-        contrastText: t.cream,
+        main: t.accent,
+        light: t.accent,
+        dark: t.accentDeep,
+        contrastText: ctaText,
       },
       secondary: {
         main: t.accent,
-        contrastText: mode === 'dark' ? '#15130f' : '#fbf8f4',
+        dark: t.accentDeep,
+        contrastText: ctaText,
       },
       background: {
         default: t.cream,
@@ -75,26 +88,26 @@ export function getTheme(mode: PaletteMode): Theme {
         hover: t.hover,
         selected: t.selected,
       },
-      error: { main: mode === 'dark' ? '#e0726a' : '#a8312a' },
-      warning: { main: mode === 'dark' ? '#d4a23f' : '#a37312' },
-      success: { main: mode === 'dark' ? '#6fae79' : '#3f7a4a' },
-      info: { main: mode === 'dark' ? '#5f9bbd' : '#2c5a78' },
+      error: { main: mode === 'dark' ? '#ff6b6b' : '#d6303b' },
+      warning: { main: mode === 'dark' ? '#f5b945' : '#c2840a' },
+      success: { main: mode === 'dark' ? '#34d399' : '#0f9d63' },
+      info: { main: mode === 'dark' ? '#56b6e8' : '#2c6fa8' },
     },
     typography: {
       fontFamily: '"Inter", "Helvetica Neue", "Arial", sans-serif',
-      h1: { fontWeight: 700, letterSpacing: '-0.035em' },
-      h2: { fontWeight: 700, letterSpacing: '-0.03em' },
-      h3: { fontWeight: 700, letterSpacing: '-0.025em' },
-      h4: { fontWeight: 700, letterSpacing: '-0.02em' },
-      h5: { fontWeight: 600, letterSpacing: '-0.015em' },
-      h6: { fontWeight: 600, letterSpacing: '-0.01em' },
+      h1: { fontFamily: '"Plus Jakarta Sans", "Inter", sans-serif', fontWeight: 800, letterSpacing: '-0.03em' },
+      h2: { fontFamily: '"Plus Jakarta Sans", "Inter", sans-serif', fontWeight: 800, letterSpacing: '-0.025em' },
+      h3: { fontFamily: '"Plus Jakarta Sans", "Inter", sans-serif', fontWeight: 700, letterSpacing: '-0.02em' },
+      h4: { fontFamily: '"Plus Jakarta Sans", "Inter", sans-serif', fontWeight: 700, letterSpacing: '-0.015em' },
+      h5: { fontFamily: '"Plus Jakarta Sans", "Inter", sans-serif', fontWeight: 700, letterSpacing: '-0.01em' },
+      h6: { fontFamily: '"Plus Jakarta Sans", "Inter", sans-serif', fontWeight: 600, letterSpacing: '-0.005em' },
       subtitle1: { fontWeight: 600, letterSpacing: '-0.005em' },
       body1: { lineHeight: 1.7 },
       body2: { lineHeight: 1.65 },
-      button: { letterSpacing: '0' },
+      button: { letterSpacing: '0.01em' },
       caption: { letterSpacing: '0.02em' },
     },
-    shape: { borderRadius: 6 },
+    shape: { borderRadius: 10 },
     components: {
       MuiCssBaseline: {
         styleOverrides: {
@@ -103,6 +116,17 @@ export function getTheme(mode: PaletteMode): Theme {
             color: t.ink,
             WebkitFontSmoothing: 'antialiased',
             MozOsxFontSmoothing: 'grayscale',
+            // Subtle ambient glow behind the page for the gaming vibe
+            backgroundImage:
+              mode === 'dark'
+                ? `radial-gradient(900px 500px at 80% -10%, rgba(124,92,255,0.10), transparent 60%),
+                   radial-gradient(700px 500px at 0% 0%, rgba(124,92,255,0.06), transparent 55%)`
+                : `radial-gradient(900px 500px at 80% -10%, rgba(106,61,240,0.06), transparent 60%)`,
+            backgroundAttachment: 'fixed',
+          },
+          '::selection': {
+            background: t.accentSoft,
+            color: t.ink,
           },
         },
       },
@@ -113,15 +137,16 @@ export function getTheme(mode: PaletteMode): Theme {
             backgroundImage: 'none',
             backgroundColor: t.paper,
             border: `1px solid ${t.lineSoft}`,
+            borderRadius: 14,
             boxShadow: 'none',
             transition: 'border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease',
             '&:hover': {
-              borderColor: t.line,
-              transform: 'translateY(-2px)',
+              borderColor: mode === 'dark' ? 'rgba(157,128,255,0.45)' : 'rgba(106,61,240,0.35)',
+              transform: 'translateY(-3px)',
               boxShadow:
                 mode === 'dark'
-                  ? '0 12px 32px -16px rgba(0,0,0,0.7)'
-                  : '0 12px 32px -16px rgba(28,26,23,0.18)',
+                  ? `0 18px 40px -20px rgba(0,0,0,0.8), 0 0 0 1px ${t.accentSoft}`
+                  : '0 18px 40px -20px rgba(22,19,31,0.22)',
             },
           },
         },
@@ -138,17 +163,45 @@ export function getTheme(mode: PaletteMode): Theme {
             textTransform: 'none',
             fontWeight: 600,
             borderRadius: 999,
-            paddingInline: 18,
+            paddingInline: 20,
+            '&.Mui-focusVisible': {
+              outline: `2px solid ${t.accent}`,
+              outlineOffset: 2,
+            },
           },
           containedPrimary: {
-            background: t.ink,
-            color: t.paper,
-            '&:hover': { background: t.buttonHover },
+            background: `linear-gradient(135deg, ${t.accent} 0%, ${t.accentDeep} 100%)`,
+            color: ctaText,
+            boxShadow: `0 6px 18px -8px ${t.glow}`,
+            '&:hover': {
+              background: `linear-gradient(135deg, ${t.accent} 0%, ${t.accentDeep} 100%)`,
+              boxShadow: `0 10px 26px -6px ${t.glow}`,
+              filter: 'brightness(1.06)',
+            },
+          },
+          containedSecondary: {
+            background: `linear-gradient(135deg, ${t.accent} 0%, ${t.accentDeep} 100%)`,
+            color: ctaText,
+            boxShadow: `0 6px 18px -8px ${t.glow}`,
+            '&:hover': {
+              background: `linear-gradient(135deg, ${t.accent} 0%, ${t.accentDeep} 100%)`,
+              boxShadow: `0 10px 26px -6px ${t.glow}`,
+              filter: 'brightness(1.06)',
+            },
           },
           outlined: {
             borderColor: t.line,
             color: t.ink,
-            '&:hover': { borderColor: t.ink, background: t.hover },
+            '&:hover': {
+              borderColor: t.accent,
+              color: t.accent,
+              background: t.accentSoft,
+            },
+          },
+          outlinedPrimary: {
+            borderColor: t.accent,
+            color: t.accent,
+            '&:hover': { borderColor: t.accentDeep, background: t.accentSoft },
           },
           text: {
             color: t.ink,
@@ -162,7 +215,7 @@ export function getTheme(mode: PaletteMode): Theme {
           root: {
             backgroundImage: 'none',
             backgroundColor: t.appBar,
-            backdropFilter: 'saturate(180%) blur(14px)',
+            backdropFilter: 'saturate(180%) blur(16px)',
             color: t.ink,
             boxShadow: 'none',
             borderBottom: `1px solid ${t.lineSoft}`,
@@ -172,11 +225,11 @@ export function getTheme(mode: PaletteMode): Theme {
       MuiChip: {
         styleOverrides: {
           root: {
-            fontWeight: 500,
-            borderRadius: 4,
+            fontWeight: 600,
+            borderRadius: 6,
             letterSpacing: '0.02em',
             fontSize: 11,
-            height: 22,
+            height: 23,
           },
           outlined: {
             borderColor: t.line,
@@ -184,8 +237,12 @@ export function getTheme(mode: PaletteMode): Theme {
             backgroundColor: 'transparent',
           },
           filled: {
-            backgroundColor: t.selected,
-            color: t.ink,
+            backgroundColor: t.accentSoft,
+            color: mode === 'dark' ? t.accent : t.accentDeep,
+          },
+          colorPrimary: {
+            backgroundColor: t.accentSoft,
+            color: mode === 'dark' ? t.accent : t.accentDeep,
           },
         },
       },
@@ -200,9 +257,12 @@ export function getTheme(mode: PaletteMode): Theme {
             backgroundColor: t.paper,
             '& .MuiOutlinedInput-notchedOutline': { borderColor: t.line },
             '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: mode === 'dark' ? 'rgba(236,231,222,0.3)' : 'rgba(28,26,23,0.25)',
+              borderColor: mode === 'dark' ? 'rgba(255,255,255,0.28)' : 'rgba(22,19,31,0.24)',
             },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: t.ink, borderWidth: 1 },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: t.accent,
+              borderWidth: 2,
+            },
           },
         },
       },
@@ -224,24 +284,35 @@ export function getTheme(mode: PaletteMode): Theme {
           root: {
             backgroundColor: t.paper,
             border: `1px solid ${t.lineSoft}`,
+            borderRadius: 12,
             boxShadow: 'none',
             '&:before': { display: 'none' },
+            '&.Mui-expanded': { borderColor: t.line },
           },
         },
       },
       MuiTooltip: {
         styleOverrides: {
-          tooltip: { backgroundColor: t.ink, color: t.paper, fontSize: 11 },
+          tooltip: { backgroundColor: t.ink, color: t.cream, fontSize: 11 },
         },
       },
       MuiLink: {
         defaultProps: { underline: 'hover' },
         styleOverrides: {
-          root: { color: t.ink, textDecorationThickness: 1, textUnderlineOffset: 3 },
+          root: {
+            color: t.accent,
+            textDecorationThickness: 1,
+            textUnderlineOffset: 3,
+          },
+        },
+      },
+      MuiBadge: {
+        styleOverrides: {
+          badge: { fontWeight: 700 },
         },
       },
     },
   });
 }
 
-export default getTheme('light');
+export default getTheme('dark');

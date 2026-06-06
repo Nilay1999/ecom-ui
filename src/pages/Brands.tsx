@@ -1,11 +1,13 @@
 import {
-  Container, Typography, Grid, Box, Chip, Avatar,
+  Container, Typography, Grid, Box, Avatar,
   Skeleton, Alert, Pagination,
 } from '@mui/material';
 import StoreIcon from '@mui/icons-material/Store';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBrands } from '../hooks/useBrands';
+import PageHeader from '../components/PageHeader';
+import EmptyState from '../components/EmptyState';
 
 export default function Brands() {
   const [page, setPage] = useState(0);
@@ -16,21 +18,23 @@ export default function Brands() {
 
   return (
     <Container maxWidth="xl" sx={{ py: 6 }}>
-      <Box sx={{ mb: 5, pb: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
-        <Typography
-          variant="caption"
-          sx={{ textTransform: 'uppercase', letterSpacing: '0.18em', fontWeight: 600, color: 'secondary.main', fontSize: 11 }}
-        >
-          Publishers & Studios
-        </Typography>
-        <Typography variant="h3" sx={{ mt: 1.5, mb: 1, fontSize: { xs: 30, md: 40 } }}>Brands</Typography>
-        <Typography color="text.secondary" sx={{ maxWidth: 560 }}>
-          Browse games by the publishers and studios that made them — from indie labels to global houses.
-        </Typography>
-      </Box>
+      <PageHeader
+        eyebrow="Publishers & Studios"
+        title="Brands"
+        subtitle="Browse games by the publishers and studios that made them — from indie labels to global houses."
+      />
 
       {isError && <Alert severity="error" sx={{ mb: 3 }}>Failed to load brands.</Alert>}
 
+      {!isLoading && !isError && brands.length === 0 ? (
+        <EmptyState
+          icon={<StoreIcon />}
+          title="No brands yet"
+          description="There are no publishers or studios to show right now. Explore the full catalog instead."
+          actionLabel="Browse Games"
+          onAction={() => navigate('/')}
+        />
+      ) : (
       <Grid container spacing={3}>
         {isLoading
           ? Array.from({ length: 12 }).map((_, i) => (
@@ -90,6 +94,7 @@ export default function Brands() {
               </Grid>
             ))}
       </Grid>
+      )}
 
       {totalPages > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>

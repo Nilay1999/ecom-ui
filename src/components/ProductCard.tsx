@@ -7,14 +7,14 @@ import {
   Button,
   Box,
   Rating,
+  useTheme,
 } from '@mui/material';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/formatPrice';
+import { fallbackImageFor } from '../utils/placeholderImage';
 import type { PaginatedProduct } from '../types/product';
-
-const FALLBACK_IMG = 'https://placehold.co/616x353/f5f1ea/1c1a17?text=Game';
 
 interface Props {
   product: PaginatedProduct;
@@ -23,6 +23,8 @@ interface Props {
 export default function ProductCard({ product }: Props) {
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const theme = useTheme();
+  const FALLBACK_IMG = fallbackImageFor(theme.palette.mode);
 
   function handleAddToCart(e: React.MouseEvent) {
     e.stopPropagation();
@@ -97,7 +99,13 @@ export default function ProductCard({ product }: Props) {
           </Typography>
         )}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 1 }}>
-          <Rating value={product.rating} precision={0.1} size="small" readOnly />
+          <Rating
+            value={product.rating}
+            precision={0.1}
+            size="small"
+            readOnly
+            aria-label={`Rated ${product.rating?.toFixed(1)} out of 5`}
+          />
           <Typography variant="caption" color="text.secondary" sx={{ fontSize: 12 }}>
             {product.rating?.toFixed(1)}
           </Typography>
@@ -126,10 +134,11 @@ export default function ProductCard({ product }: Props) {
         </Typography>
         <Button
           size="small"
-          variant="text"
-          endIcon={<ArrowForwardIcon sx={{ fontSize: '14px !important' }} />}
+          variant="outlined"
+          startIcon={<AddShoppingCartIcon sx={{ fontSize: '16px !important' }} />}
           onClick={handleAddToCart}
-          sx={{ fontSize: 12, fontWeight: 600, px: 1 }}
+          aria-label={`Add ${product.product} to cart`}
+          sx={{ fontSize: 12, fontWeight: 600 }}
         >
           Add
         </Button>

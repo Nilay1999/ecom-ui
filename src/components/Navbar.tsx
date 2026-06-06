@@ -1,35 +1,49 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
-  AppBar, Toolbar, IconButton, Badge,
-  InputBase, Box, Button,
+  AppBar, Toolbar, IconButton, Badge, Box, Button,
+  Drawer, List, ListItemButton, ListItemIcon, ListItemText, Divider,
 } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingBagOutlined';
-import SearchIcon from '@mui/icons-material/Search';
 import PersonIcon from '@mui/icons-material/PersonOutline';
 import DarkModeIcon from '@mui/icons-material/DarkModeOutlined';
 import LightModeIcon from '@mui/icons-material/LightModeOutlined';
 import LogoutIcon from '@mui/icons-material/LogoutOutlined';
+import LoginIcon from '@mui/icons-material/LoginOutlined';
+import MenuIcon from '@mui/icons-material/Menu';
+import StorefrontIcon from '@mui/icons-material/StorefrontOutlined';
+import BusinessIcon from '@mui/icons-material/BusinessOutlined';
+import CategoryIcon from '@mui/icons-material/CategoryOutlined';
+import ReceiptIcon from '@mui/icons-material/ReceiptLongOutlined';
 import PixelCartLogo from './PixelCartLogo';
+import SearchBar from './SearchBar';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useColorMode } from '../context/ColorModeContext';
 import { useAuth } from '../context/AuthContext';
+
+const NAV_LINKS = [
+  { label: 'Store', path: '/', icon: <StorefrontIcon /> },
+  { label: 'Brands', path: '/brands', icon: <BusinessIcon /> },
+  { label: 'Categories', path: '/categories', icon: <CategoryIcon /> },
+  { label: 'Orders', path: '/orders', icon: <ReceiptIcon /> },
+];
 
 export default function Navbar() {
   const navigate = useNavigate();
   const { itemCount } = useCart();
   const { mode, toggleColorMode } = useColorMode();
   const { isAuthenticated, logout } = useAuth();
-  const [search, setSearch] = useState('');
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   async function handleLogout() {
+    setDrawerOpen(false);
     await logout();
     navigate('/');
   }
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    if (search.trim()) navigate(`/search?q=${encodeURIComponent(search.trim())}`);
+  function go(path: string) {
+    setDrawerOpen(false);
+    navigate(path);
   }
 
   const navLinkSx = {
@@ -42,68 +56,60 @@ export default function Navbar() {
 
   return (
     <AppBar position="sticky">
-      <Toolbar sx={{ gap: 2, minHeight: { xs: 64, md: 72 } }}>
+      <Toolbar sx={{ gap: { xs: 1, md: 2 }, minHeight: { xs: 64, md: 72 } }}>
+        {/* Mobile hamburger */}
+        <IconButton
+          edge="start"
+          onClick={() => setDrawerOpen(true)}
+          aria-label="Open navigation menu"
+          sx={{ color: 'text.primary', display: { xs: 'inline-flex', md: 'none' } }}
+        >
+          <MenuIcon />
+        </IconButton>
+
         {/* Logo */}
-        <Box sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={() => navigate('/')}>
+        <Box
+          sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+          onClick={() => navigate('/')}
+        >
           <PixelCartLogo size={30} showText />
         </Box>
 
-        {/* Search */}
-        <Box
-          component="form"
-          onSubmit={handleSearch}
-          sx={{
-            flex: 1, maxWidth: 420, mx: 'auto',
-            display: 'flex', alignItems: 'center',
-            bgcolor: 'action.hover',
-            border: '1px solid',
-            borderColor: 'transparent',
-            borderRadius: 999,
-            px: 2, py: 0.5,
-            transition: 'background 150ms ease, border-color 150ms ease',
-            '&:hover': { bgcolor: 'action.selected' },
-            '&:focus-within': {
-              bgcolor: 'background.paper',
-              borderColor: 'divider',
-            },
-          }}
-        >
-          <SearchIcon sx={{ color: 'text.secondary', mr: 1, fontSize: 18 }} />
-          <InputBase
-            placeholder="Search games…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            sx={{ flex: 1, fontSize: 13 }}
-          />
+        {/* Search — full search box on md+, hidden on xs (search lives in drawer/hero) */}
+        <Box sx={{ flex: 1, display: { xs: 'none', sm: 'flex' }, justifyContent: 'center' }}>
+          <SearchBar variant="pill" />
         </Box>
 
-        <Box sx={{ flex: 1 }} />
+        <Box sx={{ flex: { xs: 1, sm: 0 } }} />
 
-        {/* Nav links */}
-        <Button onClick={() => navigate('/')} sx={navLinkSx}>Store</Button>
-        <Button onClick={() => navigate('/brands')} sx={navLinkSx}>Brands</Button>
-        <Button onClick={() => navigate('/categories')} sx={navLinkSx}>Categories</Button>
-        <Button onClick={() => navigate('/orders')} sx={navLinkSx}>Orders</Button>
-        {isAuthenticated ? (
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={handleLogout}
-            startIcon={<LogoutIcon sx={{ fontSize: 16 }} />}
-            sx={{ fontSize: 12, ml: 1 }}
-          >
-            Logout
-          </Button>
-        ) : (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate('/login')}
-            sx={{ fontSize: 12, ml: 1 }}
-          >
-            Sign In
-          </Button>
-        )}
+        {/* Desktop nav links */}
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
+          {NAV_LINKS.map((link) => (
+            <Button key={link.path} onClick={() => navigate(link.path)} sx={navLinkSx}>
+              {link.label}
+            </Button>
+          ))}
+          {isAuthenticated ? (
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleLogout}
+              startIcon={<LogoutIcon sx={{ fontSize: 16 }} />}
+              sx={{ fontSize: 12, ml: 1 }}
+            >
+              Logout
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate('/login')}
+              sx={{ fontSize: 12, ml: 1 }}
+            >
+              Sign In
+            </Button>
+          )}
+        </Box>
 
         <IconButton
           onClick={toggleColorMode}
@@ -113,10 +119,20 @@ export default function Navbar() {
         >
           {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
         </IconButton>
-        <IconButton onClick={() => navigate('/profile')} sx={{ color: 'text.primary' }} size="small">
+        <IconButton
+          onClick={() => navigate('/profile')}
+          sx={{ color: 'text.primary' }}
+          size="small"
+          aria-label="View profile"
+        >
           <PersonIcon />
         </IconButton>
-        <IconButton onClick={() => navigate('/cart')} sx={{ color: 'text.primary' }} size="small">
+        <IconButton
+          onClick={() => navigate('/cart')}
+          sx={{ color: 'text.primary' }}
+          size="small"
+          aria-label={`Cart, ${itemCount} item${itemCount === 1 ? '' : 's'}`}
+        >
           <Badge
             badgeContent={itemCount}
             sx={{
@@ -134,6 +150,56 @@ export default function Navbar() {
           </Badge>
         </IconButton>
       </Toolbar>
+
+      {/* Mobile drawer */}
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        PaperProps={{ sx: { width: 280 } }}
+      >
+        <Box sx={{ p: 2.5 }}>
+          <PixelCartLogo size={28} showText />
+        </Box>
+        <Box sx={{ px: 2, pb: 1 }}>
+          <SearchBar variant="pill" />
+        </Box>
+        <Divider sx={{ mt: 1 }} />
+        <List>
+          {NAV_LINKS.map((link) => (
+            <ListItemButton key={link.path} onClick={() => go(link.path)}>
+              <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>{link.icon}</ListItemIcon>
+              <ListItemText primary={link.label} />
+            </ListItemButton>
+          ))}
+          <ListItemButton onClick={() => go('/profile')}>
+            <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}><PersonIcon /></ListItemIcon>
+            <ListItemText primary="Profile" />
+          </ListItemButton>
+        </List>
+        <Divider />
+        <Box sx={{ p: 2 }}>
+          {isAuthenticated ? (
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<LogoutIcon sx={{ fontSize: 16 }} />}
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          ) : (
+            <Button
+              fullWidth
+              variant="contained"
+              startIcon={<LoginIcon sx={{ fontSize: 16 }} />}
+              onClick={() => go('/login')}
+            >
+              Sign In
+            </Button>
+          )}
+        </Box>
+      </Drawer>
     </AppBar>
   );
 }

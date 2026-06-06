@@ -1,10 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
   <defs>
-    <linearGradient id="body" x1="0" y1="0" x2="0.3" y2="1">
-      <stop offset="0%" stop-color="#3d9fe8"/>
-      <stop offset="100%" stop-color="#004f9a"/>
+    <linearGradient id="body" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0%" stop-color="#9d80ff"/>
+      <stop offset="100%" stop-color="#5326d6"/>
     </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#7c5cff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#7c5cff" stop-opacity="0"/>
+    </radialGradient>
   </defs>
+
+  <!-- Ambient glow -->
+  <circle cx="24" cy="26" r="23" fill="url(#glow)"/>
 
   <!-- Left shoulder bumper — flat tab -->
   <rect x="6" y="9" width="14" height="7" rx="3.5" fill="url(#body)"/>
@@ -15,20 +22,20 @@
   <rect x="3" y="14" width="42" height="27" rx="9" fill="url(#body)"/>
 
   <!-- D-pad: vertical bar -->
-  <rect x="12" y="23.5" width="3.5" height="11" rx="1.2" fill="rgba(255,255,255,0.88)"/>
+  <rect x="12" y="23.5" width="3.5" height="11" rx="1.2" fill="rgba(255,255,255,0.92)"/>
   <!-- D-pad: horizontal bar -->
-  <rect x="8.5" y="27" width="11" height="3.5" rx="1.2" fill="rgba(255,255,255,0.88)"/>
+  <rect x="8.5" y="27" width="11" height="3.5" rx="1.2" fill="rgba(255,255,255,0.92)"/>
 
   <!-- Face buttons — pixel squares in diamond layout -->
-  <rect x="31"   y="21.5" width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.88)"/>
-  <rect x="36.5" y="26"   width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.88)"/>
-  <rect x="31"   y="30.5" width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.88)"/>
-  <rect x="25.5" y="26"   width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.88)"/>
+  <rect x="31"   y="21.5" width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.92)"/>
+  <rect x="36.5" y="26"   width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.92)"/>
+  <rect x="31"   y="30.5" width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.92)"/>
+  <rect x="25.5" y="26"   width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.92)"/>
 
   <!-- Centre home button -->
-  <circle cx="24" cy="22" r="2.8" fill="rgba(255,255,255,0.95)"/>
+  <circle cx="24" cy="22" r="2.8" fill="rgba(255,255,255,0.96)"/>
 
   <!-- Small select / menu buttons -->
-  <rect x="18.5" y="19.5" width="3.5" height="2" rx="1" fill="rgba(255,255,255,0.45)"/>
-  <rect x="26"   y="19.5" width="3.5" height="2" rx="1" fill="rgba(255,255,255,0.45)"/>
+  <rect x="18.5" y="19.5" width="3.5" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+  <rect x="26"   y="19.5" width="3.5" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
 </svg>

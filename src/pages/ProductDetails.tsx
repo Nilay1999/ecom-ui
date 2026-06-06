@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -14,22 +15,34 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  useTheme,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { useProduct } from '../hooks/useProduct';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/formatPrice';
-
-const FALLBACK_IMG = 'https://placehold.co/616x353/f5f1ea/1c1a17?text=Game';
+import { fallbackImageFor } from '../utils/placeholderImage';
 
 export default function ProductDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const theme = useTheme();
+  const FALLBACK_IMG = fallbackImageFor(theme.palette.mode);
 
   const { data, isLoading, isError } = useProduct(id);
   const product = data?.data;
+
+  // Build the gallery: primary image first, then the rest.
+  const images = product?.productImages ?? [];
+  const gallery = [...images].sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));
+  const [activeImage, setActiveImage] = useState(0);
+
+  // Reset selection when navigating between products.
+  useEffect(() => {
+    setActiveImage(0);
+  }, [id]);
 
   function handleAddToCart() {
     if (!product) return;
@@ -69,8 +82,7 @@ export default function ProductDetails() {
     );
   }
 
-  const primaryImage =
-    product.productImages?.find((img) => img.isPrimary)?.imageUrl ?? FALLBACK_IMG;
+  const activeUrl = gallery[activeImage]?.imageUrl ?? FALLBACK_IMG;
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
@@ -79,11 +91,11 @@ export default function ProductDetails() {
       </Button>
 
       <Grid container spacing={6}>
-        {/* Cover */}
+        {/* Cover + thumbnail gallery */}
         <Grid item xs={12} md={5}>
           <Box
             component="img"
-            src={primaryImage}
+            src={activeUrl}
             alt={product.productName}
             onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
               e.currentTarget.src = FALLBACK_IMG;
@@ -97,6 +109,34 @@ export default function ProductDetails() {
               aspectRatio: '16/9',
             }}
           />
+          {gallery.length > 1 && (
+            <Box sx={{ display: 'flex', gap: 1, mt: 1.5, flexWrap: 'wrap' }}>
+              {gallery.map((img, i) => (
+                <Box
+                  key={img.id ?? i}
+                  component="img"
+                  src={img.imageUrl ?? FALLBACK_IMG}
+                  alt={`${product.productName} screenshot ${i + 1}`}
+                  onClick={() => setActiveImage(i)}
+                  onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                    e.currentTarget.src = FALLBACK_IMG;
+                  }}
+                  sx={{
+                    width: 72,
+                    height: 48,
+                    objectFit: 'cover',
+                    borderRadius: 1,
+                    cursor: 'pointer',
+                    border: '2px solid',
+                    borderColor: i === activeImage ? 'secondary.main' : 'divider',
+                    opacity: i === activeImage ? 1 : 0.7,
+                    transition: 'opacity 150ms ease, border-color 150ms ease',
+                    '&:hover': { opacity: 1 },
+                  }}
+                />
+              ))}
+            </Box>
+          )}
         </Grid>
 
         {/* Details */}
@@ -140,7 +180,13 @@ export default function ProductDetails() {
           )}
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-            <Rating value={product.rating ?? 0} precision={0.1} size="small" readOnly />
+            <Rating
+              value={product.rating ?? 0}
+              precision={0.1}
+              size="small"
+              readOnly
+              aria-label={`Rated ${(product.rating ?? 0).toFixed(1)} out of 5`}
+            />
             <Typography variant="caption" color="text.secondary">
               {product.rating?.toFixed(1)}
             </Typography>

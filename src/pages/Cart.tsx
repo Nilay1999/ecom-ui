@@ -66,6 +66,8 @@ export default function Cart() {
                   <ListItemSecondaryAction sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <IconButton
                       size="small"
+                      aria-label={`Decrease quantity of ${item.productName}`}
+                      disabled={item.quantity <= 1}
                       onClick={() => updateQuantity(item.productId, item.quantity - 1)}
                     >
                       <RemoveIcon fontSize="small" />
@@ -73,15 +75,21 @@ export default function Cart() {
                     <TextField
                       value={item.quantity}
                       size="small"
-                      inputProps={{ style: { textAlign: 'center', width: 32 } }}
+                      inputProps={{
+                        style: { textAlign: 'center', width: 32 },
+                        inputMode: 'numeric',
+                        min: 1,
+                        'aria-label': `Quantity of ${item.productName}`,
+                      }}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value);
-                        if (!isNaN(val)) updateQuantity(item.productId, val);
+                        const val = parseInt(e.target.value, 10);
+                        if (!isNaN(val)) updateQuantity(item.productId, Math.max(1, val));
                       }}
                       sx={{ width: 56 }}
                     />
                     <IconButton
                       size="small"
+                      aria-label={`Increase quantity of ${item.productName}`}
                       onClick={() => updateQuantity(item.productId, item.quantity + 1)}
                     >
                       <AddIcon fontSize="small" />
@@ -92,6 +100,7 @@ export default function Cart() {
                     <IconButton
                       edge="end"
                       color="error"
+                      aria-label={`Remove ${item.productName} from cart`}
                       onClick={() => removeItem(item.productId)}
                     >
                       <DeleteIcon />
